@@ -26,8 +26,4 @@ module.exports = {
             {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?mimetype=image/svg+xml'}
         ]
     },
-    plugins:[new htmlplugin({
-        inject:true,
-        filename:"data/newindex.html"
-    })]
 }

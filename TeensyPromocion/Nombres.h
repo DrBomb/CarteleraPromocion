@@ -30,7 +30,7 @@ const char Nombres[55][11] = {
   "Juan M",
   "Nelson",
   "Americo",
-  "Jonathan M",
+  "Maykol",
   "Luis M",
   "Maria D",
   "Maria G",

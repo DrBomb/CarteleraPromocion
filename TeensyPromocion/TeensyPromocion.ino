@@ -11,6 +11,7 @@ String Nombre;
 void bottomFiveScrollLeft(char Data[6], int pos, bool negative);
 void fillMatrix(CRGB color, unsigned int fromX = 0, unsigned int fromY = 0,
 unsigned int toX=31,unsigned int toY=15);
+void leftFade(CRGB color = CRGB::White);
 CHSV LetterColor(0,255,255);
 CRGB leds[NUM_LEDS];
 
@@ -19,7 +20,7 @@ void setup() {
   Nombre.reserve(12);
   random16_add_entropy(analogRead(0));
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds,NUM_LEDS);
-  FastLED.setBrightness(30);
+  FastLED.setBrightness(15);
   FastLED.show();
 }
 
@@ -36,8 +37,8 @@ void loop() {
   } else {
     index = random8(54);
     //Serial.println(index);
-    mostrarNombre(index,true);
-    mostrarNombre(index, true);
+    mostrarNombre(index,false);
+    mostrarNombre(index, false);
   }
   //FastLED.show();
   //leftFade();
@@ -47,19 +48,19 @@ void loop() {
 void info(bool negative){
   const String cadena1 = "Promo";
   const String cadena2 = "57";
-  char data[6]
+  char data[6];
   int i = 0;
   for(int x = 0;x<6;x++){
-    data2[x] = cadena2.charAt(x);
+    data[x] = cadena1.charAt(x);
   }
   while(i<3){
     
   } 
 }
 
-void leftFade(CRGB color = CRGB::White){
+void leftFade(CRGB color){
   for(int x=31;x>=0;x--){
-    fadeToBlackMatrix(20);
+    fadeToBlackMatrix(30);
     for(int y = 0;y<16;y++){
       leds[ Matrix(x,y) ] = color;
     }
