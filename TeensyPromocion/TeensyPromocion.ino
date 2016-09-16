@@ -1,19 +1,25 @@
-
 #include <FastLED.h>
 #include "font8x8_basic.h"
 #include "Nombres.h"
+#include "palettes.h"
 #define NUM_LEDS 512
 #define DATA_PIN 17
 #define MATRIX_OFFSET 0
-char Data[6];
+
+// Funciones
+void  selectPalette(bool selectRandom, int number = 0);
 const int reversed[8] = {7,6,5,4,3,2,1,0};
-String Nombre;
 void bottomFiveScrollLeft(char Data[6], int pos, bool negative);
 void fillMatrix(CRGB color, unsigned int fromX = 0, unsigned int fromY = 0,
 unsigned int toX=31,unsigned int toY=15);
 void leftFade(CRGB color = CRGB::White);
+
+// Globales
+String Nombre;
 CHSV LetterColor(0,255,255);
 CRGB leds[NUM_LEDS];
+CRGBPalette16 currentPalette;
+TBlendType    currentBlending;
 
 void setup() {
   Serial.begin(9600);
@@ -26,7 +32,10 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  unsigned int index;
+  selectPalette(true);
+  currentBlending=LINEARBLEND;
+  fallingColors();
+ /* unsigned int index;
   if(Serial.available()){
     index = Serial.parseInt();
     while(Serial.available()){
@@ -39,10 +48,7 @@ void loop() {
     //Serial.println(index);
     mostrarNombre(index,false);
     mostrarNombre(index, false);
-  }
-  //FastLED.show();
-  //leftFade();
-  //delay(300);
+  }*/
 }
 
 void info(bool negative){
@@ -74,6 +80,7 @@ void fadeToBlackMatrix(int number){
 }
 
 void mostrarNombre(int index, bool negative){
+  char Data[6];
   Nombre = String(Nombres[index]);
   Nombre.trim();
   for(unsigned int i = 0;i<Nombre.length()-4;i++){
@@ -214,4 +221,60 @@ int Matrix(unsigned int x, unsigned int y){
   return Led;
 }
 
+void selectPalette(bool selectRandom, int number){
+  int selection;
+  if(selectRandom){
+    selection = random8(3);
+  } else {
+    selection = number;
+  }
+  switch(selection){
+    case 0:
+    currentPalette = cloud_gp;
+    break;
+    case 1:
+    currentPalette = RainbowColors_p;
+    break;
+    case 2:
+    currentPalette = OceanColors_p;
+    break;
+  }
+}
+
+void fallingColors(){
+  /*
+  int black_entry = random(17);
+  if(black_entry+4>17){
+    int i = 0;
+    while(black_entry+i<17){
+      currentPalette[black_entry+i]=CRGB::Black;
+      i++;
+    }
+    for(int x = 0;x<4-i;x++){
+      currentPalette[x] = CRGB::Black;
+    }
+  } else {
+    currentPalette[black_entry] = CRGB::Black;
+    currentPalette[black_entry+1] = CRGB::Black;
+    currentPalette[black_entry+2] = CRGB::Black;
+    currentPalette[black_entry+3] = CRGB::Black;
+  }*/
+  fill_solid(currentPalette,16,CRGB::Black);
+  currentPalette[7] = CRGB::Yellow;
+  currentPalette[0] = CRGB::Yellow;
+  currentPalette[15] = CRGB::Yellow;
+  unsigned int offsets[32];
+  for(unsigned int i = 0;i<32;i++){
+    offsets[i] = random8(50);
+  }
+  for(int veces = 0;veces<255;veces++){
+    for(int x=0;x<32;x++){
+      for(int y=0;y<16;y++){
+        leds[ Matrix(x,y) ] = ColorFromPalette( currentPalette, (veces)+offsets[x]+(y*50), 255, currentBlending);
+      }
+    }
+    FastLED.show();
+    delay(10);
+  }
+}
 
