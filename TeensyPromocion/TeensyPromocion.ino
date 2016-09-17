@@ -2,22 +2,23 @@
 #include "font8x8_basic.h"
 #include "Nombres.h"
 #include "palettes.h"
+#include "animaciones.h"
 #define NUM_LEDS 512
 #define DATA_PIN 17
 #define MATRIX_OFFSET 0
 
 // Funciones
-void  selectPalette(bool selectRandom, int number = 0);
+void  selectPalette(bool selectRandom, uint8_t number = 0);
 const int reversed[8] = {7,6,5,4,3,2,1,0};
-void bottomFiveScrollLeft(char Data[6], int pos, bool negative);
-void fillMatrix(CRGB color, unsigned int fromX = 0, unsigned int fromY = 0,
-unsigned int toX=31,unsigned int toY=15);
+void bottomFiveScrollLeft(char Data[6], uint8_t pos, bool negative);
+void fillMatrix(CRGB color, uint8_t fromX = 0, uint8_t fromY = 0,
+uint8_t toX=31,uint8_t toY=15);
 void leftFade(CRGB color = CRGB::White);
 
 // Globales
 String Nombre;
 CHSV LetterColor(0,255,255);
-CRGB leds[NUM_LEDS];
+CRGB leds[NUM_LEDS+1];
 CRGBPalette16 currentPalette;
 TBlendType    currentBlending;
 
@@ -26,16 +27,26 @@ void setup() {
   Nombre.reserve(12);
   random16_add_entropy(analogRead(0));
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds,NUM_LEDS);
-  FastLED.setBrightness(15);
+  FastLED.setBrightness(30);
   FastLED.show();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  selectPalette(true);
+  for(int x = 0;x<17;x++){
+    fillMatrix(CRGB::Black);
+    drawThinCircle(8,4,x);
+    delay(10);
+  }
+  for(int x = 16;x>=0;x--){
+    fillMatrix(CRGB::Black);
+    drawThinCircle(8,4,x);
+    delay(10);
+  }
+  /*selectPalette(true);
   currentBlending=LINEARBLEND;
   fallingColors();
- /* unsigned int index;
+  unsigned int index;
   if(Serial.available()){
     index = Serial.parseInt();
     while(Serial.available()){
@@ -79,7 +90,7 @@ void fadeToBlackMatrix(int number){
   fadeToBlackBy(&leds[MATRIX_OFFSET],512,number);
 }
 
-void mostrarNombre(int index, bool negative){
+void mostrarNombre(uint8_t index, bool negative){
   char Data[6];
   Nombre = String(Nombres[index]);
   Nombre.trim();
@@ -116,7 +127,7 @@ void mostrarNombre(int index, bool negative){
   delay(200);
 }
 
-void bottomFiveScrollLeft(char Data[6], int pos, bool negative){
+void bottomFiveScrollLeft(char Data[6], uint8_t pos, bool negative){
   CRGB Fill;
   CHSV Letter;
   if(negative){
@@ -152,7 +163,7 @@ void bottomFiveScrollLeft(char Data[6], int pos, bool negative){
   }
 }
 
-void upperFiveScrollLeft(char Data[6], int pos, bool negative){
+void upperFiveScrollLeft(char Data[6], uint8_t pos, bool negative){
   CRGB Fill;
   CHSV Letter;
   if(negative){
@@ -188,8 +199,8 @@ void upperFiveScrollLeft(char Data[6], int pos, bool negative){
   }
 }
 
-void fillMatrix(CRGB color, unsigned int fromX, unsigned int fromY,
-unsigned int toX,unsigned int toY){
+void fillMatrix(CRGB color, uint8_t fromX, uint8_t fromY,
+uint8_t toX, uint8_t toY){
   for(unsigned int x = fromX;x<=toX;x++){
     for(unsigned int y = fromY;y<=toY;y++){
       leds[ Matrix(x,y) ] = color;
@@ -197,12 +208,9 @@ unsigned int toX,unsigned int toY){
   }
 }
 
-int Matrix(unsigned int x, unsigned int y){
-  if(y>15){
-    y=15;
-  }
-  if(x>32){
-    x=32;
+int Matrix(int8_t x, int8_t y){
+  if(y>15 || x>32 || y<0 || x<0){
+    return NUM_LEDS;
   }
   int Led;
   if(y<8){
@@ -221,7 +229,7 @@ int Matrix(unsigned int x, unsigned int y){
   return Led;
 }
 
-void selectPalette(bool selectRandom, int number){
+void selectPalette(bool selectRandom, uint8_t number){
   int selection;
   if(selectRandom){
     selection = random8(3);
@@ -242,15 +250,14 @@ void selectPalette(bool selectRandom, int number){
 }
 
 void fallingColors(){
-  /*
-  int black_entry = random(17);
-  if(black_entry+4>17){
+  int black_entry = random(16);
+  if(black_entry+7>16){
     int i = 0;
-    while(black_entry+i<17){
+    while(black_entry+i<16){
       currentPalette[black_entry+i]=CRGB::Black;
       i++;
     }
-    for(int x = 0;x<4-i;x++){
+    for(int x = 0;x<7-i;x++){
       currentPalette[x] = CRGB::Black;
     }
   } else {
@@ -258,23 +265,54 @@ void fallingColors(){
     currentPalette[black_entry+1] = CRGB::Black;
     currentPalette[black_entry+2] = CRGB::Black;
     currentPalette[black_entry+3] = CRGB::Black;
-  }*/
-  fill_solid(currentPalette,16,CRGB::Black);
-  currentPalette[7] = CRGB::Yellow;
-  currentPalette[0] = CRGB::Yellow;
-  currentPalette[15] = CRGB::Yellow;
-  unsigned int offsets[32];
-  for(unsigned int i = 0;i<32;i++){
-    offsets[i] = random8(50);
+    currentPalette[black_entry+4] = CRGB::Black;
+    currentPalette[black_entry+5] = CRGB::Black;
+    currentPalette[black_entry+6] = CRGB::Black;
   }
-  for(int veces = 0;veces<255;veces++){
+  uint8_t offsets[32];
+  uint8_t index = 0;
+  for(unsigned int i = 0;i<32;i++){
+    offsets[i] = random8(128);
+  }
+  for(int veces = 255;veces>=0;veces--){
     for(int x=0;x<32;x++){
       for(int y=0;y<16;y++){
-        leds[ Matrix(x,y) ] = ColorFromPalette( currentPalette, (veces)+offsets[x]+(y*50), 255, currentBlending);
+        index = (veces*20)+offsets[x]+(y*10);
+        leds[ Matrix(x,y) ] = ColorFromPalette( currentPalette, index, 255, currentBlending);
       }
     }
     FastLED.show();
-    delay(10);
+    delay(100);
   }
+}
+
+void drawThinCircle(uint8_t x, uint8_t y, uint8_t diameter){
+  if(diameter==0){
+    FastLED.show();
+    return;
+  }
+  CRGB color = CRGB::White;
+  int center;
+  if(diameter&0x01){
+    center = (float)(diameter/2);
+  } else {
+    center = (diameter/2)-1;
+  }
+  for(uint8_t yi = 0;yi<diameter;yi++){
+    for(uint8_t xi = 0;xi<diameter;xi++){
+      if(circulo[diameter-1][yi][xi]){
+        if(yi!=center && xi!=center){
+          leds[ Matrix(x-center+xi,y-center+yi) ] = color;
+        } else if(yi==center && xi!= center){
+          leds[ Matrix(x-center+xi,y) ] = color; 
+        } else if(yi!=center && xi==center){
+          leds[ Matrix(x,y-center+yi) ] = color;
+        } else {
+          leds[ Matrix(x,y) ] = color;
+        }
+      }
+    }
+  }
+  FastLED.show();
 }
 
