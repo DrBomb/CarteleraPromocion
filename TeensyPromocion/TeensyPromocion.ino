@@ -8,12 +8,15 @@
 #define MATRIX_OFFSET 0
 
 // Funciones
+void drawHalfCircle(int8_t x, CRGB color, bool openRight, bool draw = true);
+void drawCharAt(int8_t x, int8_t y, char character, bool draw = true);
 void  selectPalette(bool selectRandom, uint8_t number = 0);
 const int reversed[8] = {7,6,5,4,3,2,1,0};
 void bottomFiveScrollLeft(char Data[6], uint8_t pos, bool negative);
 void fillMatrix(CRGB color, uint8_t fromX = 0, uint8_t fromY = 0,
 uint8_t toX=31,uint8_t toY=15);
 void leftFade(CRGB color = CRGB::White);
+void drawThinCircle(uint8_t x, uint8_t y, uint8_t diameter, bool draw = true);
 
 // Globales
 String Nombre;
@@ -33,16 +36,10 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  for(int x = 0;x<17;x++){
-    fillMatrix(CRGB::Black);
-    drawThinCircle(8,4,x);
-    delay(10);
-  }
-  for(int x = 16;x>=0;x--){
-    fillMatrix(CRGB::Black);
-    drawThinCircle(8,4,x);
-    delay(10);
-  }
+  drawThinCircle(15,7,16,false);
+  drawCharAt(9,4,'3',false);
+  drawCharAt(17,4,'5',false);
+  drawHalfCircle(8,CRGB::White,false);
   /*selectPalette(true);
   currentBlending=LINEARBLEND;
   fallingColors();
@@ -286,7 +283,7 @@ void fallingColors(){
   }
 }
 
-void drawThinCircle(uint8_t x, uint8_t y, uint8_t diameter){
+void drawThinCircle(uint8_t x, uint8_t y, uint8_t diameter, bool draw){
   if(diameter==0){
     FastLED.show();
     return;
@@ -313,6 +310,81 @@ void drawThinCircle(uint8_t x, uint8_t y, uint8_t diameter){
       }
     }
   }
-  FastLED.show();
+  if(draw){FastLED.show();}
+}
+
+void drawHalfCircle(int8_t x, CRGB color, bool openRight, bool draw){
+  uint8_t startX, finishX;
+  color = CRGB::White;
+  if(openRight){
+    startX=0;
+    finishX=6;
+    if(x<-6 || x>31){
+      if(draw){FastLED.show();}
+      return;
+    }
+    if(x<0){
+      startX = x * -1;
+    }
+    if(x>31-6){
+      finishX = 6-(31-x);
+    }
+    for(uint8_t yi = 0;yi<16;yi++){
+      for(uint8_t xi = startX;xi<=finishX;xi++){
+        if(circulo[15][yi][xi]){
+          leds[ Matrix(x+xi,yi) ] = color;
+        }
+      }
+    }
+  } else {
+    startX = 9;
+    finishX = 15;
+    if(x<0 || x>36){
+      if(draw){FastLED.show();}
+      return;
+    }
+    if(x>31){
+      finishX = 15 - (x-31);
+    }
+    if(x<6){
+      startX = 6 -x;
+    }
+    for(uint8_t yi = 0;yi<16;yi++){
+      for(uint8_t xi = startX;xi<=finishX;xi++){
+        if(circulo[15][yi][xi]){
+          leds[ Matrix(x-15+xi,yi) ] = color;
+        }
+      }
+    }
+  }
+  if(draw){FastLED.show();}
+}
+
+void drawCharAt(int8_t x, int8_t y, char character, bool draw){
+  uint8_t charStartX = 0,charFinishX = 7,charStartY = 0,charFinishY = 7;
+  if(x>31 || x<-7 || y>15 || y<-7){
+    if(draw){ FastLED.show();}
+    return;
+  }
+  if(x<0){
+    charStartX = x * -1;
+  }
+  if(x>31-8){
+    charFinishX = 8-(x-31);
+  }
+  if(y<0){
+    charStartY = y * -1;
+  }
+  if(y>15-8){
+    charFinishY = 8-(y-15);
+  }
+  for(uint8_t xi = charStartX;xi<=charFinishX;xi++){
+    for(uint8_t yi = charStartY;yi<=charFinishY;yi++){
+      if(bitRead(font8x8_basic[(int)character][yi],xi)==1){
+        leds[Matrix(x+xi,y+yi)] = LetterColor;
+      }
+    }
+  }
+  if(draw){FastLED.show();}
 }
 
