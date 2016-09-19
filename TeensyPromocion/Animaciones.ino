@@ -55,6 +55,14 @@ void selectPalette(bool selectRandom, uint8_t number){
   }
 }
 
+void selectBlending(){
+  if(random8() > 190){
+    currentBlending = NOBLEND;
+  } else {
+    currentBlending = LINEARBLEND;
+  }
+}
+
 void fallingColors(){
   int black_entry = random(16);
   if(black_entry+7>16){
@@ -106,3 +114,43 @@ void leftFade(CRGB color){
 void fadeToBlackMatrix(int number){
   fadeToBlackBy(&leds[MATRIX_OFFSET],512,number);
 }
+
+void transicion(uint8_t times){
+  char pro[] = " Pro ";
+  char mo[] = " mo  ";
+  unsigned int startTime , checkTime, diff;
+  int8_t pos;
+  uint8_t index = 0;
+  selectBlending();
+  selectPalette(true);
+  startTime = millis();
+  checkTime = startTime;
+  while(millis() - startTime < times*6000){
+    diff = millis() - checkTime;
+    if(diff <= 500){
+      upperFiveScrollLeft(pro, 3, false);
+      bottomFiveScrollLeft(mo, 0, false);
+    } else if(diff <= 1000){
+      upperFiveScrollLeft(pro, 3, true);
+      bottomFiveScrollLeft(mo, 0, true);
+    } else if(diff <= 6000){
+      fillMatrix(CRGB::Black);
+      for(uint8_t x = 0;x<14;x++){
+        pos = 8 -x;
+        drawHalfCircle(pos,ColorFromPalette( currentPalette,index+(x*10), 255, currentBlending),true,false);
+        pos = 23 + x;
+        drawHalfCircle(pos,ColorFromPalette( currentPalette,index+(x*10),255,currentBlending),false,false);
+        drawThinCircle(15,7,CRGB::White,16,false);
+        drawCharAt(9,5,'3',false);
+        drawCharAt(17,5,'5',false);
+      }
+      delay(100);
+      index += 50;
+    } else {
+      checkTime = millis();
+    }
+    FastLED.show();
+    LetterColor.hue++;
+  }
+}
+

@@ -6,6 +6,7 @@
 #define NUM_LEDS 512
 #define DATA_PIN 17
 #define MATRIX_OFFSET 0
+#define TRIG1 
 
 // Funciones
 void drawHalfCircle(int8_t x, CRGB color, bool openRight, bool draw = true);
@@ -17,6 +18,7 @@ void fillMatrix(CRGB color, uint8_t fromX = 0, uint8_t fromY = 0,
 uint8_t toX=31,uint8_t toY=15);
 void leftFade(CRGB color = CRGB::White);
 void drawThinCircle(uint8_t x, uint8_t y, CRGB color, uint8_t diameter, bool draw = true);
+void transicion(uint8_t times = 2);
 
 // Globales
 String Nombre;
@@ -26,6 +28,7 @@ CRGBPalette16 currentPalette;
 TBlendType    currentBlending;
 
 void setup() {
+  Serial2.begin(115200);
   Serial.begin(9600);
   Nombre.reserve(12);
   random16_add_entropy(analogRead(0));
@@ -36,18 +39,11 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  drawThinCircle(15,7,16,false);
-  drawCharAt(9,4,'3',false);
-  drawCharAt(17,4,'5',false);
-  drawHalfCircle(8,CRGB::White,false);
-  /*selectPalette(true);
-  currentBlending=LINEARBLEND;
-  fallingColors();
-  unsigned int index;
-  if(Serial.available()){
-    index = Serial.parseInt();
-    while(Serial.available()){
-      Serial.read();  
+  /*unsigned int index;
+  if(Serial2.available()){
+    index = Serial2.parseInt();
+    while(Serial2.available()){
+      Serial2.read();  
     }
     mostrarNombre(index,false);
     mostrarNombre(index,false);
@@ -57,19 +53,7 @@ void loop() {
     mostrarNombre(index,false);
     mostrarNombre(index, false);
   }*/
-}
-
-void info(bool negative){
-  const String cadena1 = "Promo";
-  const String cadena2 = "57";
-  char data[6];
-  int i = 0;
-  for(int x = 0;x<6;x++){
-    data[x] = cadena1.charAt(x);
-  }
-  while(i<3){
-    
-  } 
+  transicion();
 }
 
 
