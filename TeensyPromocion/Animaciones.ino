@@ -36,21 +36,27 @@ void mostrarNombre(uint8_t index, bool negative){
 }
 
 void selectPalette(bool selectRandom, uint8_t number){
-  int selection;
+  uint8_t selection;
   if(selectRandom){
-    selection = random8(3);
+    selection = random8(5);
   } else {
     selection = number;
   }
   switch(selection){
     case 0:
-    currentPalette = cloud_gp;
+    currentPalette = LavaColors_p;
     break;
     case 1:
     currentPalette = RainbowColors_p;
     break;
     case 2:
     currentPalette = OceanColors_p;
+    break;
+    case 3:
+    currentPalette = ForestColors_p;
+    break;
+    case 4:
+    currentPalette = PartyColors_p;
     break;
   }
 }
@@ -111,35 +117,29 @@ void leftFade(CRGB color){
   }
 }
 
-void fadeToBlackMatrix(int number){
-  fadeToBlackBy(&leds[MATRIX_OFFSET],512,number);
-}
-
 void transicion(uint8_t times){
-  char pro[] = " Pro ";
-  char mo[] = " mo  ";
-  unsigned int startTime , checkTime, diff;
+  unsigned long startTime , checkTime, diff;
   int8_t pos;
   uint8_t index = 0;
-  selectBlending();
-  selectPalette(true);
   startTime = millis();
   checkTime = startTime;
+  fillMatrix(CRGB::Black);
   while(millis() - startTime < times*6000){
     diff = millis() - checkTime;
     if(diff <= 500){
-      upperFiveScrollLeft(pro, 3, false);
-      bottomFiveScrollLeft(mo, 0, false);
-    } else if(diff <= 1000){
-      upperFiveScrollLeft(pro, 3, true);
-      bottomFiveScrollLeft(mo, 0, true);
-    } else if(diff <= 6000){
+      drawCharAt(0,3,'P',false);
+      drawCharAt(4,6,'r',false);
+      drawCharAt(11,3,'o',false);
+      drawCharAt(18,6,'m',false);
+      drawCharAt(25,3,'o',false);
+     // drawChatAt(10,0,'o',false);
+    }  else if(diff <= 6000){
       fillMatrix(CRGB::Black);
       for(uint8_t x = 0;x<14;x++){
         pos = 8 -x;
-        drawHalfCircle(pos,ColorFromPalette( currentPalette,index+(x*10), 255, currentBlending),true,false);
+        drawHalfCircle(pos,ColorFromPalette( currentPalette,index+(x*10)),true,false);
         pos = 23 + x;
-        drawHalfCircle(pos,ColorFromPalette( currentPalette,index+(x*10),255,currentBlending),false,false);
+        drawHalfCircle(pos,ColorFromPalette( currentPalette,index+(x*10)),false,false);
         drawThinCircle(15,7,CRGB::White,16,false);
         drawCharAt(9,5,'3',false);
         drawCharAt(17,5,'5',false);
@@ -148,9 +148,69 @@ void transicion(uint8_t times){
       index += 50;
     } else {
       checkTime = millis();
+      fillMatrix(CRGB::Black);
     }
     FastLED.show();
-    LetterColor.hue++;
+    LetterColor.hue += 5;
+    //SIM_SRVCOP = 0x55;
+    //SIM_SRVCOP = 0xAA;
   }
 }
+
+void pacmanUpper(bool ghost, bool backwards){
+  bool closed = false;
+  if(!ghost){
+    if(!backwards){
+      for(int8_t x = -6;x<39;x++){
+        fillMatrix(CRGB::Black, x,0,x+7,7);
+        if(x>-1){
+          fillMatrix(CRGB::Black,0,0,x,7);
+        }
+        drawPacman(x,0, CRGB::Orange,closed,false);
+        fadeToBlackMatrix(1);
+        closed = !closed;
+        delay(200);
+      }
+    } else {
+      for(int8_t x = 32;x>=-6;x--){
+        fillMatrix(CRGB::Black, x,0,x+7,7);
+        if(x<32){
+          fillMatrix(CRGB::Black,31,0,x,7);
+        }
+        drawPacman(x,0,CRGB::Orange,closed,true);
+        closed = !closed;
+        delay(200);
+      }
+    }
+  }
+}
+
+void pacmanLower(bool ghost, bool backwards){
+  bool closed = false;
+  if(!ghost){
+    if(!backwards){
+      for(int8_t x = -6;x<35;x++){
+        fillMatrix(CRGB::Black, x,8,x+7,15);
+        if(x>-1){
+          fillMatrix(CRGB::Black,0,8,x,15);
+        }
+        drawPacman(x,8, CRGB::Orange,closed,false);
+        fadeToBlackMatrix(1);
+        closed = !closed;
+        delay(200);
+      }
+    } else {
+      for(int8_t x = 32;x>=-8;x--){
+        fillMatrix(CRGB::Black, x,8,x+7,15);
+        if(x<32){
+          fillMatrix(CRGB::Black,x,8,31,15);
+        }
+        drawPacman(x,8,CRGB::Orange,closed,true);
+        closed = !closed;
+        delay(200);
+      }
+    }
+  }
+}
+
 

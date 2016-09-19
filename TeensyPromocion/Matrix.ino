@@ -1,6 +1,6 @@
 
 int Matrix(int8_t x, int8_t y){
-  if(y>15 || x>32 || y<0 || x<0){
+  if(y>15 || x>31 || y<0 || x<0){
     return NUM_LEDS;
   }
   int Led;
@@ -18,6 +18,10 @@ int Matrix(int8_t x, int8_t y){
     }
   }
   return Led;
+}
+
+void fadeToBlackMatrix(int number){
+  fadeToBlackBy(&leds[MATRIX_OFFSET],512,number);
 }
 
 void drawThinCircle(uint8_t x, uint8_t y, CRGB color, uint8_t diameter, bool draw){
@@ -123,10 +127,10 @@ void drawCharAt(int8_t x, int8_t y, char character, bool draw){
   if(draw){FastLED.show();}
 }
 
-void fillMatrix(CRGB color, uint8_t fromX, uint8_t fromY,
-uint8_t toX, uint8_t toY){
-  for(unsigned int x = fromX;x<=toX;x++){
-    for(unsigned int y = fromY;y<=toY;y++){
+void fillMatrix(CRGB color, int8_t fromX, int8_t fromY,
+int8_t toX, int8_t toY){
+  for(int8_t x = fromX;x<=toX;x++){
+    for(uint8_t y = fromY;y<=toY;y++){
       leds[ Matrix(x,y) ] = color;
     }
   }
@@ -202,5 +206,40 @@ void upperFiveScrollLeft(char Data[6], uint8_t pos, bool negative){
       }
     }
   }
+}
+
+void fillVerticalPattern(bool draw){
+  uint8_t index = 0;
+  for(uint8_t x = 0;x<32;x++){
+    for(uint8_t y = 0;y<16;y++){
+      leds[ Matrix(x,y) ] = ColorFromPalette(currentPalette,index,255,currentBlending);
+    }
+    index += 15;
+  }
+  if(draw){FastLED.show();}
+}
+
+void drawPacman(int8_t x, int8_t y, CRGB color, bool closed, bool reversed, bool draw){
+  uint8_t frame;
+  if(closed){
+    frame = 1;
+  } else {
+    frame = 0;
+  }
+  if(x<-7 || x>39 || y<-7 || y>24){
+    if(draw){FastLED.show();}
+    return;
+  }
+  for(int8_t xi = 0;xi<=7;xi++){
+    for(uint8_t yi = 0;yi<=7;yi++){
+      if(pacman[frame][yi][xi] && !reversed){
+        leds[ Matrix(x+xi,y+yi) ] = color;
+      }
+      if(pacman[frame][yi][(xi-7)*-1] && reversed){
+        leds[ Matrix(x+xi,y+yi) ] = color;
+      }
+    }
+  }
+  if(draw){FastLED.show();}
 }
 
