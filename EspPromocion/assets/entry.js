@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 var images = require('./images.js');
 require('expose?$!expose?jQuery!jquery');
+require('expose?toastr!toastr');
 require("!bootstrap-webpack!./bootstrap.config.js");
 require('react-logger');
 class Foto extends React.Component {
@@ -14,8 +15,17 @@ class Foto extends React.Component {
             method:'POST',
             data:{
                 index:this.props.index,
+            },
+            success:function(resp){
+                if(resp.success){
+                    toastr.success("Enviado");
+                } else {
+                    toastr.warning("Dispositivo Ocupado");
+                }
+            },
+            error:function(jqxhr,msg,exc){
+                toastr.error("Error: " + msg);
             }
-
         });
     }
 }

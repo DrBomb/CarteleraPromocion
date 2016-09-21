@@ -1,3 +1,4 @@
+#include <DFPlayer_Mini_Mp3.h>
 #include <FastLED.h>
 #include "font8x8_basic.h"
 #include "Nombres.h"
@@ -40,12 +41,18 @@ void drawPacman(int8_t x, int8_t y, CRGB color, bool closed, bool reversed, bool
 String Nombre;
 CHSV LetterColor(0,255,255);
 CRGB leds[NUM_LEDS+1];
-CRGBPalette256 currentPalette;
+CRGBPalette16 currentPalette;
 TBlendType    currentBlending;
 
 void setup() {
   Serial2.begin(115200);
   Serial.begin(9600);
+  Serial3.begin(9600);
+  mp3_set_serial(Serial3);
+  delay(10);
+  mp3_set_volume(30);
+  delay(10),
+  delay(1);
   Nombre.reserve(12);
   random16_add_entropy(analogRead(0));
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds,NUM_LEDS);
@@ -56,11 +63,13 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   unsigned int index;
-  /*if(Serial2.available()){
+  if(Serial2.available()){
     index = Serial2.parseInt();
     while(Serial2.available()){
       Serial2.read();  
     }
+    Serial.println(index);
+    mp3_play(3);
     mostrarNombre(index,false);
     mostrarNombre(index,false);
   } else {
@@ -68,28 +77,17 @@ void loop() {
     //Serial.println(index);
     mostrarNombre(index,false);
     mostrarNombre(index, false);
-  }*/
+  }
+  pacmanDelete();
   selectPalette(true);
-  //selectBlending();
-  //mostrarNombre(index,false);
-  //pacmanUpper(false,false);
-  //pacmanLower(false,true);
-  //selectBlending();
-  //fallingColors();
+  selectBlending();
   transicion();
-  /*bool closed = true;
-  for(int8_t x = -8;x<31+8;x++){
-    fillMatrix(CRGB::Black);
-    drawPacman(x,0,CRGB::Orange, closed, true);
-    closed = !closed;
-    FastLED.show();
-    delay(300);
-  }*/
-  
 }
 
-
-
-
-
+void pacmanDelete(){
+  mp3_play(2);
+  pacmanUpper(false,false);
+  pacmanLower(false,true);
+  mp3_stop();
+}
 

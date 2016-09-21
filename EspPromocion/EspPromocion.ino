@@ -7,6 +7,7 @@
 ESP8266WebServer server (80);
 
 const char *ssid = "Promo35";
+bool response;
 
 void setup() {
   Serial.begin(115200);
@@ -18,11 +19,16 @@ void setup() {
   server.on("/",HTTP_POST,handleJson);
   server.serveStatic("/bundle.js",SPIFFS,"/bundle.js","max-age=3600");
   server.begin();
+  tBusy = false;
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   server.handleClient();
+  while(Serial.available()){
+    Serial.read();
+    tBusy = false;
+  }
 }
 
 void handleRoot(){
@@ -32,12 +38,16 @@ void handleRoot(){
 }
 
 void handleJson(){
-  const char response[] = "{\"status\":true}";
-  int index;
-  String argument, argname = "index";
-  argument = server.arg(argname);
-  index = argument.toInt();
-  Serial.println(index);
-  server.send(200,"text/json",response);
+  if(tBusy){
+    const char response[] = "{\"status\":false}";
+  } else {
+    const char response[] = "{\"status\":true}";
+    int index;
+    String argument, argname = "index";
+    argument = server.arg(argname);
+    index = argument.toInt();
+    tBusy = true;
+    Serial.println(index);
+    server.send(200,"text/json",response);
 }
 

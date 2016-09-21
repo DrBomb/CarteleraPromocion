@@ -132,7 +132,6 @@ void transicion(uint8_t times){
       drawCharAt(11,3,'o',false);
       drawCharAt(18,6,'m',false);
       drawCharAt(25,3,'o',false);
-     // drawChatAt(10,0,'o',false);
     }  else if(diff <= 6000){
       fillMatrix(CRGB::Black);
       for(uint8_t x = 0;x<14;x++){
@@ -169,7 +168,7 @@ void pacmanUpper(bool ghost, bool backwards){
         drawPacman(x,0, CRGB::Orange,closed,false);
         fadeToBlackMatrix(1);
         closed = !closed;
-        delay(200);
+        delay(150);
       }
     } else {
       for(int8_t x = 32;x>=-6;x--){
@@ -179,7 +178,7 @@ void pacmanUpper(bool ghost, bool backwards){
         }
         drawPacman(x,0,CRGB::Orange,closed,true);
         closed = !closed;
-        delay(200);
+        delay(150);
       }
     }
   }
@@ -197,7 +196,7 @@ void pacmanLower(bool ghost, bool backwards){
         drawPacman(x,8, CRGB::Orange,closed,false);
         fadeToBlackMatrix(1);
         closed = !closed;
-        delay(200);
+        delay(150);
       }
     } else {
       for(int8_t x = 32;x>=-8;x--){
@@ -207,7 +206,7 @@ void pacmanLower(bool ghost, bool backwards){
         }
         drawPacman(x,8,CRGB::Orange,closed,true);
         closed = !closed;
-        delay(200);
+        delay(150);
       }
     }
   }
