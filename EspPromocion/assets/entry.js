@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 var images = require('./images.js');
 require('expose?$!expose?jQuery!jquery');
-require('expose?toastr!toastr');
+//require('expose?toastr!toastr');
+var toastr = require('toastr');
+require("style!css!../node_modules/toastr/build/toastr.min.css");
 require("!bootstrap-webpack!./bootstrap.config.js");
 require('react-logger');
 class Foto extends React.Component {

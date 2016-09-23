@@ -7,7 +7,7 @@
 ESP8266WebServer server (80);
 
 const char *ssid = "Promo35";
-bool response;
+bool tBusy;
 
 void setup() {
   Serial.begin(115200);
@@ -49,5 +49,6 @@ void handleJson(){
     tBusy = true;
     Serial.println(index);
     server.send(200,"text/json",response);
+  } 
 }
 
