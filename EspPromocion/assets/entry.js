@@ -19,7 +19,7 @@ class Foto extends React.Component {
                 index:this.props.index,
             },
             success:function(resp){
-                if(resp.success){
+                if(resp.status){
                     toastr.success("Enviado");
                 } else {
                     toastr.warning("Dispositivo Ocupado");

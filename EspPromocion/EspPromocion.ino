@@ -39,16 +39,17 @@ void handleRoot(){
 
 void handleJson(){
   if(tBusy){
-    const char response[] = "{\"status\":false}";
+    const char respons1[] = "{\"status\":false}";
+    server.send(200,"text/json",respons1);
   } else {
-    const char response[] = "{\"status\":true}";
+    const char respons2[] = "{\"status\":true}";
     int index;
     String argument, argname = "index";
     argument = server.arg(argname);
     index = argument.toInt();
     tBusy = true;
     Serial.println(index);
-    server.send(200,"text/json",response);
+    server.send(200,"text/json",respons2);
   } 
 }
 
