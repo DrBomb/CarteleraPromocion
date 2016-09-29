@@ -84,7 +84,7 @@ void loop() {
       Serial1.read();  
     }
     Serial1.println(index);
-    Serial2.println(matriz_arduino[index]);
+    Serial2.println(matriz_arduino[index]+1);
     mp3_play(3);
     mostrarNombre(index,false);
     mostrarNombre(index,false);

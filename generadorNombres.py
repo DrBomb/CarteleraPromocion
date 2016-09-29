@@ -39,7 +39,7 @@ with open("./TeensyPromocion/Nombres.h","w") as f, open("./TeensyPromocion/Nombr
             nombre = nombre.lower()
             nombre = "".join([nombre[0].upper(),nombre[1:]])
             nombres_file += "    \"{}\",  //{}\n".format(nombre,i)
-            arduino_file += "    {}, //{}, {}\n".format(nombres_excel.index(nombres_archivos[i]),i,nombre)
+            arduino_file += "    {}, //{}, {}\n".format(nombres_excel.index(nombres_archivos[i])+1,i,nombre)
             with open(''.join(['./EspPromocion/assets/originales/',x])) as imagen:
                 with Image.open(imagen) as baseimage:
                     thumbnail = resizeimage.resize_thumbnail(baseimage,[size,size])
