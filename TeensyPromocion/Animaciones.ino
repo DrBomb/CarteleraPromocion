@@ -2,37 +2,95 @@ void mostrarNombre(uint8_t index, bool negative){
   char Data[6];
   Nombre = String(Nombres[index]);
   Nombre.trim();
-  for(unsigned int i = 0;i<Nombre.length()-4;i++){
-    Data[0] = Nombre.charAt(i);
-    Data[1] = Nombre.charAt(i+1);
-    Data[2] = Nombre.charAt(i+2);
-    Data[3] = Nombre.charAt(i+3);
-    Data[4] = Nombre.charAt(i+4);
-    for(unsigned int j = 0;j<9;j++){
+  if (Nombre.length() ==4){
+    Data[0] = Nombre.charAt(0);
+    Data[1] = Nombre.charAt(1);
+    Data[2] = Nombre.charAt(2);
+    Data[3] = Nombre.charAt(3);
+    Data[4] = ' ';
+    for(unsigned int j=0;j<9;j++){
+      upperFiveScrollLeft(" Ing ",4,negative);
+      bottomFiveScrollLeft(Data,0, negative);
+      LetterColor.hue++;
+      FastLED.show();
+      SIM_SRVCOP = 0x55;
+      SIM_SRVCOP = 0xAA;
+      delay(50);
+    }
+    delay(200);
+    for(unsigned int j=0;j<9;j++){
+      upperFiveScrollLeft(" Ing ",4,negative);
+      bottomFiveScrollLeft(Data,0, negative);
+      LetterColor.hue++;
+      FastLED.show();
+      SIM_SRVCOP = 0x55;
+      SIM_SRVCOP = 0xAA;
+      delay(50);
+    }
+    delay(200);
+  } else if(Nombre.length() == 5){
+    Data[0] = Nombre.charAt(0);
+    Data[1] = Nombre.charAt(1);
+    Data[2] = Nombre.charAt(2);
+    Data[3] = Nombre.charAt(3);
+    Data[4] = Nombre.charAt(4);
+    for(unsigned int j=0;j<9;j++){
       upperFiveScrollLeft(" Ing ",4,negative);
       bottomFiveScrollLeft(Data,j, negative);
       LetterColor.hue++;
       FastLED.show();
+      SIM_SRVCOP = 0x55;
+      SIM_SRVCOP = 0xAA;
       delay(50);
     }
-  }
-  delay(200);
-  for(unsigned int i = 0;i<Nombre.length()-4;i++){
-    char Data[6];
-    Data[4] = Nombre.charAt(Nombre.length()-1-i);
-    Data[3] = Nombre.charAt(Nombre.length()-2-i);
-    Data[2] = Nombre.charAt(Nombre.length()-3-i);
-    Data[1] = Nombre.charAt(Nombre.length()-4-i);
-    Data[0] = Nombre.charAt(Nombre.length()-5-i);
+    delay(200);
     for(int j = 8;j>=0;j--){
       upperFiveScrollLeft(" Ing ",4,negative);
       bottomFiveScrollLeft(Data,j,negative);
       LetterColor.hue++;
       FastLED.show();
+      SIM_SRVCOP = 0x55;
+      SIM_SRVCOP = 0xAA;
       delay(50);
     }
+    delay(200);
+  } else {
+    for(unsigned int i = 0;i<Nombre.length()-4;i++){
+      Data[0] = Nombre.charAt(i);
+      Data[1] = Nombre.charAt(i+1);
+      Data[2] = Nombre.charAt(i+2);
+      Data[3] = Nombre.charAt(i+3);
+      Data[4] = Nombre.charAt(i+4);
+      for(unsigned int j = 0;j<9;j++){
+        upperFiveScrollLeft(" Ing ",4,negative);
+        bottomFiveScrollLeft(Data,j, negative);
+        LetterColor.hue++;
+        FastLED.show();
+        SIM_SRVCOP = 0x55;
+        SIM_SRVCOP = 0xAA;
+        delay(50);
+      }
+    }
+    delay(200);
+    for(unsigned int i = 0;i<Nombre.length()-4;i++){
+      char Data[6];
+      Data[4] = Nombre.charAt(Nombre.length()-1-i);
+      Data[3] = Nombre.charAt(Nombre.length()-2-i);
+      Data[2] = Nombre.charAt(Nombre.length()-3-i);
+      Data[1] = Nombre.charAt(Nombre.length()-4-i);
+      Data[0] = Nombre.charAt(Nombre.length()-5-i);
+      for(int j = 8;j>=0;j--){
+        upperFiveScrollLeft(" Ing ",4,negative);
+        bottomFiveScrollLeft(Data,j,negative);
+        LetterColor.hue++;
+        FastLED.show();
+        SIM_SRVCOP = 0x55;
+        SIM_SRVCOP = 0xAA;
+        delay(50);
+      }
+    }
+    delay(200);
   }
-  delay(200);
 }
 
 void selectPalette(bool selectRandom, uint8_t number){
@@ -139,6 +197,7 @@ void transicion(uint8_t times){
         drawHalfCircle(pos,ColorFromPalette( currentPalette,index+(x*10)),true,false);
         pos = 23 + x;
         drawHalfCircle(pos,ColorFromPalette( currentPalette,index+(x*10)),false,false);
+        fillStripPattern(index);
         drawThinCircle(15,7,CRGB::White,16,false);
         drawCharAt(9,5,'3',false);
         drawCharAt(17,5,'5',false);
@@ -151,8 +210,8 @@ void transicion(uint8_t times){
     }
     FastLED.show();
     LetterColor.hue += 5;
-    //SIM_SRVCOP = 0x55;
-    //SIM_SRVCOP = 0xAA;
+    SIM_SRVCOP = 0x55;
+    SIM_SRVCOP = 0xAA;
   }
 }
 
@@ -168,6 +227,8 @@ void pacmanUpper(bool ghost, bool backwards){
         drawPacman(x,0, CRGB::Orange,closed,false);
         fadeToBlackMatrix(1);
         closed = !closed;
+        SIM_SRVCOP = 0x55;
+        SIM_SRVCOP = 0xAA;
         delay(150);
       }
     } else {
@@ -178,6 +239,8 @@ void pacmanUpper(bool ghost, bool backwards){
         }
         drawPacman(x,0,CRGB::Orange,closed,true);
         closed = !closed;
+        SIM_SRVCOP = 0x55;
+        SIM_SRVCOP = 0xAA;
         delay(150);
       }
     }
@@ -196,6 +259,8 @@ void pacmanLower(bool ghost, bool backwards){
         drawPacman(x,8, CRGB::Orange,closed,false);
         fadeToBlackMatrix(1);
         closed = !closed;
+        SIM_SRVCOP = 0x55;
+        SIM_SRVCOP = 0xAA;
         delay(150);
       }
     } else {
@@ -206,8 +271,18 @@ void pacmanLower(bool ghost, bool backwards){
         }
         drawPacman(x,8,CRGB::Orange,closed,true);
         closed = !closed;
+        SIM_SRVCOP = 0x55;
+        SIM_SRVCOP = 0xAA;
         delay(150);
       }
+    }
+  }
+}
+
+void fillStripPattern(uint8_t base_index){
+  for(uint8_t x = 0;x<STRIPS_NUM;x++){
+    for(uint8_t y = 0;y<STRIP_MAX_SIZE;y++){
+      leds[ strips[x][y] ] = ColorFromPalette(currentPalette,base_index+(10*y));
     }
   }
 }

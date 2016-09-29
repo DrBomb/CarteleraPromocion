@@ -1,12 +1,22 @@
+#define NUM_LEDS 710
+#define SAFE_LED NUM_LEDS+1
+#include <NewPing.h>
 #include <DFPlayer_Mini_Mp3.h>
 #include <FastLED.h>
 #include "font8x8_basic.h"
 #include "Nombres.h"
 #include "sprites.h"
-#define NUM_LEDS 512
+#include "strips.h"
+#include "NombresArduino.h"
+
 #define DATA_PIN 17
 #define MATRIX_OFFSET 0
-#define TRIG1 
+#define TRIG 23
+#define ECHO1 22
+#define ECHO2 21
+#define ECHO3 20
+#define LOW_BRIGHTNESS 5
+#define HIGH_BRIGHTNESS 50
 
 DEFINE_GRADIENT_PALETTE( cloud_gp ) {
     0, 247,149, 91,
@@ -14,7 +24,7 @@ DEFINE_GRADIENT_PALETTE( cloud_gp ) {
   255,  42, 79,188};
 
 //SUBRUTINA DE WATCHDOG
-/*#ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 void startup_early_hook() {
@@ -22,7 +32,7 @@ void startup_early_hook() {
 }
 #ifdef __cplusplus
 }
-#endif*/
+#endif
 
 // Funciones
 void drawHalfCircle(int8_t x, CRGB color, bool openRight, bool draw = true);
@@ -39,14 +49,17 @@ void drawPacman(int8_t x, int8_t y, CRGB color, bool closed, bool reversed, bool
 
 // Globales
 String Nombre;
+uint8_t brillo;
 CHSV LetterColor(0,255,255);
 CRGB leds[NUM_LEDS+1];
 CRGBPalette16 currentPalette;
 TBlendType    currentBlending;
 
+
 void setup() {
   Serial2.begin(115200);
   Serial.begin(9600);
+  Serial1.begin(115200);
   Serial3.begin(9600);
   mp3_set_serial(Serial3);
   delay(10);
@@ -58,29 +71,33 @@ void setup() {
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds,NUM_LEDS);
   FastLED.setBrightness(30);
   FastLED.show();
+  brillo = HIGH_BRIGHTNESS;
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  //checkForBrightness();
   unsigned int index;
-  if(Serial2.available()){
-    index = Serial2.parseInt();
-    while(Serial2.available()){
-      Serial2.read();  
+  if(Serial1.available()){
+    index = Serial1.parseInt();
+    while(Serial1.available()){
+      Serial1.read();  
     }
-    Serial.println(index);
+    Serial1.println(index);
+    Serial2.println(matriz_arduino[index]);
     mp3_play(3);
     mostrarNombre(index,false);
     mostrarNombre(index,false);
   } else {
-    index = random8(54);
-    //Serial.println(index);
+    index = random8(58);
+    Serial2.println(matriz_arduino[index]);
     mostrarNombre(index,false);
     mostrarNombre(index, false);
   }
   pacmanDelete();
   selectPalette(true);
   selectBlending();
+  Serial2.println(70);
   transicion();
 }
 
@@ -89,5 +106,16 @@ void pacmanDelete(){
   pacmanUpper(false,false);
   pacmanLower(false,true);
   mp3_stop();
+}
+
+int16_t buscarPosicion(uint8_t pos){
+  int16_t index = 0;
+  while(1){
+    if(matriz_arduino[index] == pos){
+      return index-1;
+    }else {
+      index++;     
+    }
+  }
 }
 
