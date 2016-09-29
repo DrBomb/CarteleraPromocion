@@ -3,3 +3,4 @@ EspPromocion/assets/originales/*.jpg
 *.swp
 *.swo
 *.pyc
+.directory
